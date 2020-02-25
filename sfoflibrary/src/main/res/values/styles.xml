@@ -1,0 +1,15 @@
+<resources>
+
+    <!-- Dialog 背景透明 样式 -->
+    <style name="UpyaDialogBGT" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <!--  SelectFileOrFolderDialog 出入动画 -->
+    <style name="UpyaAnimSelectFileOrFolderDialog" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/upya_dialog_in</item>
+        <item name="android:windowExitAnimation">@anim/upya_dialog_out</item>
+    </style>
+
+</resources>
