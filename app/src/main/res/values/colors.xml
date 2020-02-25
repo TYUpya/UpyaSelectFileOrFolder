@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="C_App_Main">#0088FF</color>
+    <color name="C_App_Main_Press">#0066CC</color>
+    <color name="C_App_BG">#F6F6F6</color>
+    <color name="C_App_List_Divider">#EEEEEE</color>
+</resources>

@@ -1,0 +1,2 @@
+include ':app', ':sfoflibrary'
+rootProject.name='UpyaSelectFileOrFolder'
