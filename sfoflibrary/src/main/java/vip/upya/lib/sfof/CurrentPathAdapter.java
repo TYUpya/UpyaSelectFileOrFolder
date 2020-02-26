@@ -13,13 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** 当前文件路径 适配器 */
+@SuppressWarnings("all")
 public class CurrentPathAdapter extends RecyclerView.Adapter<CurrentPathAdapter.ViewHolder> {
 
     private List<File> listDatas;
-    private OnCurrentPathRVItemClickListener mOnCurrentPathRVItemClickListener;
+    private OnCurrentPathRVItemClickListener onCurrentPathRVItemClickListener;
 
-    public CurrentPathAdapter() {
+    public CurrentPathAdapter(OnCurrentPathRVItemClickListener onCurrentPathRVItemClickListener) {
         this.listDatas = new ArrayList<>();
+        this.onCurrentPathRVItemClickListener = onCurrentPathRVItemClickListener;
     }
 
     @NonNull
@@ -34,20 +36,14 @@ public class CurrentPathAdapter extends RecyclerView.Adapter<CurrentPathAdapter.
         File file = listDatas.get(position);
         holder.itemCpText.setText(position == 0 ? "SD卡" : file.getName());
         holder.itemCpText.setOnClickListener(v -> {
-            if (mOnCurrentPathRVItemClickListener != null)
-                mOnCurrentPathRVItemClickListener.onCurrentPathRVItemClick(position, file);
+            if (onCurrentPathRVItemClickListener != null)
+                onCurrentPathRVItemClickListener.onCurrentPathRVItemClick(position, file);
         });
     }
 
     @Override
     public int getItemCount() {
         return this.listDatas.size();
-    }
-
-    /** 设置监听 */
-    public CurrentPathAdapter setOnRVItemClickListener(OnCurrentPathRVItemClickListener onCurrentPathRVItemClickListener) {
-        this.mOnCurrentPathRVItemClickListener = onCurrentPathRVItemClickListener;
-        return this;
     }
 
     /** 刷新数据 */
