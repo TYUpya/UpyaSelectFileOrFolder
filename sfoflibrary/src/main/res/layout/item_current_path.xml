@@ -3,7 +3,7 @@
     android:id="@+id/itemCpText"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="?android:attr/selectableItemBackgroundBorderless"
+    android:background="?android:attr/selectableItemBackground"
     android:drawableEnd="@drawable/svg_into"
     android:drawablePadding="5dp"
     android:gravity="center_vertical"

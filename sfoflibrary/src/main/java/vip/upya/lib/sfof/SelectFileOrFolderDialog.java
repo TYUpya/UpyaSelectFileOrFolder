@@ -230,6 +230,7 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
 
         mCurrentPathAdapter.onRefreshData(mCurrentFiles);
         mSubfileAdapter.onRefreshData(mSubFiles);
+        dialogSfofFilesRView.scrollToPosition(0);
         Utils.mHandler.post(() -> dialogSfofCurrentPathRView.scrollToPosition(mCurrentFiles.size() - 1));
     }
 
@@ -262,6 +263,9 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
     /** 跳转到指定文件数据 */
     private void gotoFiles(File currentFile) {
         int index = mCurrentFiles.indexOf(currentFile);
+        if (index + 1 == mCurrentFiles.size())
+            return;
+
         mCurrentFiles.subList(index + 1, mCurrentFiles.size()).clear();
         File[] files = currentFile.listFiles(mFileFilter);
         mSubFiles.clear();
