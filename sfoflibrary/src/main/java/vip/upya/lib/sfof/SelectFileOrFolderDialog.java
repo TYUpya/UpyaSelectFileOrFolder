@@ -1,8 +1,9 @@
 /*
 
+    一、请在您的主项目AndroidManifest.xml文件添加以下权限
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+    二、如果集成后项目运行报错，请在您的主项目build.gradle文件添加以下依赖
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
 */
@@ -51,6 +52,12 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
     private FileFilter mFileFilter;
     private OnSelectFileOrFolderListener mOnSelectFileOrFolderListener;
 
+    /**
+     * @param activity                     界面对象
+     * @param isSingleChoice               true=单选；false=多选
+     * @param choiceMode                   选择模式；参照：CHOICEMODE_ONLY_FILE、CHOICEMODE_ONLY_FOLDER、CHOICEMODE_UNLIMITED
+     * @param OnSelectFileOrFolderListener 监听器
+     */
     public SelectFileOrFolderDialog(Activity activity, boolean isSingleChoice, int choiceMode, OnSelectFileOrFolderListener onSelectFileOrFolderListener) {
         super(activity, R.layout.dialog_select_file_or_folder, DIALOG_MODE_BOTTOM);
         this.mIsSingleChoice = isSingleChoice;
@@ -298,7 +305,11 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
 
     /** 挑选文件或文件夹 监听事件回调 */
     public interface OnSelectFileOrFolderListener {
-        /** 回调选中的文件列表 */
+        /**
+         * 回调选中的文件列表
+         *
+         * @param selectedFileList 选择的文件或文件夹列表
+         */
         default void onSelectFileOrFolder(List<File> selectedFileList) {
         }
     }
