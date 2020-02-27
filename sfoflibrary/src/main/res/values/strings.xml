@@ -1,6 +1,8 @@
 <resources>
 
     <string name="app_name">UpyaSfof</string>
-    <string name="dialogSfofTitle">请挑选文件或文件夹</string>
+    <string name="dialogSfofTitle1">请挑选文件</string>
+    <string name="dialogSfofTitle2">请挑选文件夹</string>
+    <string name="dialogSfofTitle3">请挑选文件或文件夹</string>
 
 </resources>

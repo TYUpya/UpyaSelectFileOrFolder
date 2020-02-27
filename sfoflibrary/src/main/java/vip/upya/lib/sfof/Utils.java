@@ -1,6 +1,9 @@
 package vip.upya.lib.sfof;
 
 import android.os.Handler;
+import android.view.View;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -52,6 +55,19 @@ public class Utils {
                 return 1;
             return o1.getName().compareTo(o2.getName());
         });
+    }
+
+    /** 记录RecyclerView当前位置 */
+    public static int[] getPositionAndOffset(LinearLayoutManager linearLayoutManager) {
+        int[] positionRecord = new int[2];
+
+        View topView = linearLayoutManager.getChildAt(0);
+        if (topView != null) {
+            positionRecord[0] = linearLayoutManager.getPosition(topView);
+            positionRecord[1] = topView.getTop();
+        }
+
+        return positionRecord;
     }
 
 }

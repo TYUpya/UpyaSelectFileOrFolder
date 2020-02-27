@@ -23,12 +23,14 @@ public class SubfileAdapter extends RecyclerView.Adapter<SubfileAdapter.ViewHold
     private List<File> listDatas;
     private Map<String, File> selectedFileMap;
     private boolean isSingleChoice;
+    private int choiceMode;
     private OnSubfileRVItemClickListener onSubfileRVItemClickListener;
 
-    public SubfileAdapter(boolean isSingleChoice, OnSubfileRVItemClickListener onSubfileRVItemClickListener) {
+    public SubfileAdapter(boolean isSingleChoice, int choiceMode, OnSubfileRVItemClickListener onSubfileRVItemClickListener) {
         this.listDatas = new ArrayList<>();
         this.selectedFileMap = new HashMap<>();
         this.isSingleChoice = isSingleChoice;
+        this.choiceMode = choiceMode;
         this.onSubfileRVItemClickListener = onSubfileRVItemClickListener;
     }
 
@@ -42,15 +44,17 @@ public class SubfileAdapter extends RecyclerView.Adapter<SubfileAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         File file = listDatas.get(position);
+        boolean isFile = file.isFile();
+        boolean isDirectory = file.isDirectory();
 
         holder.itemSfName.setText(file.getName());
         holder.itemSfUpdateTime.setText("更新时间：" + Utils.getTimestampToDate("yyyy-MM-dd HH:mm:ss", file.lastModified()));
-        if (file.isFile()) {
+        if (isFile) {
             holder.itemSfImage.setImageResource(R.drawable.svg_file);
             holder.itemSfSize.setText("文件大小：" + Utils.formatFileSize(file.length()));
             holder.itemSfSize.setVisibility(View.VISIBLE);
             holder.itemView.setOnClickListener(null);
-        } else if (file.isDirectory()) {
+        } else if (isDirectory) {
             holder.itemSfImage.setImageResource(R.drawable.svg_folder);
             holder.itemSfSize.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(v -> {
@@ -63,23 +67,35 @@ public class SubfileAdapter extends RecyclerView.Adapter<SubfileAdapter.ViewHold
             holder.itemView.setOnClickListener(null);
         }
 
-        holder.itemSfCheck.setOnCheckedChangeListener(null);
-        holder.itemSfCheck.setChecked(selectedFileMap.containsKey(file.getAbsolutePath()));
-        holder.itemSfCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                if (isSingleChoice)
-                    selectedFileMap.clear();
-
-                selectedFileMap.put(file.getAbsolutePath(), file);
-
-                if (isSingleChoice)
-                    Utils.mHandler.postDelayed(this::notifyDataSetChanged, 100);
+        if (choiceMode == SelectFileOrFolderDialog.CHOICEMODE_ONLY_FILE) {
+            if (isDirectory) {
+                holder.itemSfCheck.setVisibility(View.GONE);
             } else {
-                selectedFileMap.remove(file.getAbsolutePath());
+                holder.itemSfCheck.setVisibility(View.VISIBLE);
             }
-            if (onSubfileRVItemClickListener != null)
-                onSubfileRVItemClickListener.onSubfileRVItemCBClick();
-        });
+        } else {
+            holder.itemSfCheck.setVisibility(View.VISIBLE);
+        }
+
+        holder.itemSfCheck.setOnCheckedChangeListener(null);
+        if (holder.itemSfCheck.getVisibility() == View.VISIBLE) {
+            holder.itemSfCheck.setChecked(selectedFileMap.containsKey(file.getAbsolutePath()));
+            holder.itemSfCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    if (isSingleChoice)
+                        selectedFileMap.clear();
+
+                    selectedFileMap.put(file.getAbsolutePath(), file);
+
+                    if (isSingleChoice)
+                        Utils.mHandler.postDelayed(this::notifyDataSetChanged, 100);
+                } else {
+                    selectedFileMap.remove(file.getAbsolutePath());
+                }
+                if (onSubfileRVItemClickListener != null)
+                    onSubfileRVItemClickListener.onSubfileRVItemCBClick();
+            });
+        }
     }
 
     @Override

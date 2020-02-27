@@ -13,12 +13,14 @@ import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +28,12 @@ import java.util.List;
 import java.util.Map;
 
 /** 挑选文件或文件夹 弹窗 */
+@SuppressWarnings("all")
 public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnClickListener, View.OnLongClickListener, CurrentPathAdapter.OnCurrentPathRVItemClickListener, SubfileAdapter.OnSubfileRVItemClickListener {
+
+    public static final int CHOICEMODE_ONLY_FILE = 1; // 只选文件
+    public static final int CHOICEMODE_ONLY_FOLDER = 2; // 只选文件夹
+    public static final int CHOICEMODE_UNLIMITED = 3; // 无限制选择
 
     private ImageView dialogSfofClose;
     private ImageView dialogSfofSelectAll;
@@ -38,14 +45,20 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
     private SubfileAdapter mSubfileAdapter;
     private List<File> mCurrentFiles = new ArrayList<>();
     private List<File> mSubFiles = new ArrayList<>();
-    private Map<String, Integer> mListPositions = new HashMap<>();
+    private Map<String, int[]> mListPositions = new HashMap<>();
+    private boolean mIsSingleChoice;
+    private int mChoiceMode;
+    private FileFilter mFileFilter;
     private OnSelectFileOrFolderListener mOnSelectFileOrFolderListener;
 
-    public SelectFileOrFolderDialog(Activity activity, boolean isSingleChoice, OnSelectFileOrFolderListener onSelectFileOrFolderListener) {
+    public SelectFileOrFolderDialog(Activity activity, boolean isSingleChoice, int choiceMode, OnSelectFileOrFolderListener onSelectFileOrFolderListener) {
         super(activity, R.layout.dialog_select_file_or_folder, DIALOG_MODE_BOTTOM);
+        this.mIsSingleChoice = isSingleChoice;
+        this.mChoiceMode = choiceMode;
         this.mOnSelectFileOrFolderListener = onSelectFileOrFolderListener;
         setCancelable(false);
         getWindow().setWindowAnimations(R.style.UpyaAnimSelectFileOrFolderDialog);
+
         dialogSfofClose = findViewById(R.id.dialogSfofClose);
         dialogSfofSelectAll = findViewById(R.id.dialogSfofSelectAll);
         dialogSfofFinish = findViewById(R.id.dialogSfofFinish);
@@ -58,26 +71,50 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
         dialogSfofSelectAll.setOnLongClickListener(this);
         dialogSfofFinish.setOnLongClickListener(this);
 
-        dialogSfofSelectAll.setVisibility(isSingleChoice ? View.GONE : View.VISIBLE);
+        TextView dialogSfofTitle = findViewById(R.id.dialogSfofTitle);
+        switch (mChoiceMode) {
+            case CHOICEMODE_ONLY_FILE:
+                dialogSfofTitle.setText(R.string.dialogSfofTitle1);
+                break;
+            case CHOICEMODE_ONLY_FOLDER:
+                dialogSfofTitle.setText(R.string.dialogSfofTitle2);
+                break;
+            case CHOICEMODE_UNLIMITED:
+                dialogSfofTitle.setText(R.string.dialogSfofTitle3);
+                break;
+        }
+
+        dialogSfofSelectAll.setVisibility(mIsSingleChoice ? View.GONE : View.VISIBLE);
         changeSfofSelectAllState(false);
         changeSfofFinishState(false);
 
         dialogSfofCurrentPathRView.setLayoutManager(new LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false));
         dialogSfofCurrentPathRView.setAdapter(mCurrentPathAdapter = new CurrentPathAdapter(this));
         dialogSfofFilesRView.setLayoutManager(new LinearLayoutManager(activity));
-        dialogSfofFilesRView.setAdapter(mSubfileAdapter = new SubfileAdapter(isSingleChoice, this));
+        dialogSfofFilesRView.setAdapter(mSubfileAdapter = new SubfileAdapter(isSingleChoice, mChoiceMode, this));
+
+        mFileFilter = new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                if (mChoiceMode == CHOICEMODE_ONLY_FOLDER) {
+                    return pathname.isDirectory();
+                } else {
+                    return true;
+                }
+            }
+        };
+
+        setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_UP) {
+                rollbackFiles();
+                return false;
+            }
+            return false;
+        });
 
         Utils.mHandler.post(() -> {
             File sdFile = Environment.getExternalStorageDirectory();
             loadFiles(sdFile);
-        });
-
-        setOnKeyListener((dialog, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_UP) {
-                // TODO 点击返回键
-                return false;
-            }
-            return false;
         });
     }
 
@@ -90,10 +127,14 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
             Map<String, File> selectedFileMap = mSubfileAdapter.getSelectedFileMap();
 
             for (File subFile : mSubFiles) {
+                if (mChoiceMode == CHOICEMODE_ONLY_FILE && subFile.isDirectory())
+                    continue;
+
+                String path = subFile.getAbsolutePath();
                 if (isSelectAll) { // 需要全不选
-                    selectedFileMap.remove(subFile.getAbsolutePath());
+                    selectedFileMap.remove(path);
                 } else { // 需要全选
-                    selectedFileMap.put(subFile.getAbsolutePath(), subFile);
+                    selectedFileMap.put(path, subFile);
                 }
             }
 
@@ -136,14 +177,15 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
 
     @Override
     public void onCurrentPathRVItemClick(int position, File bean) {
-        // TODO 点击路径
+        gotoFiles(bean);
     }
 
     @Override
     public void onSubfileRVItemClick(int position, File bean) {
-        // TODO 点击子文件
+        loadFiles(bean);
     }
 
+    /** 选中文件回调/查询更新全选状态 */
     @Override
     public void onSubfileRVItemCBClick() {
         Map<String, File> selectedFileMap = mSubfileAdapter.getSelectedFileMap();
@@ -154,9 +196,11 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
             if (dialogSfofSelectAll.getVisibility() == View.VISIBLE) {
                 boolean isSelectAll = true;
                 for (File subFile : mSubFiles) {
-                    if (!selectedFileMap.containsValue(subFile)) {
-                        isSelectAll = false;
-                        break;
+                    if ((mChoiceMode == CHOICEMODE_ONLY_FILE && subFile.isFile()) || (mChoiceMode == CHOICEMODE_ONLY_FOLDER && subFile.isDirectory()) || (mChoiceMode == CHOICEMODE_UNLIMITED)) {
+                        if (!selectedFileMap.containsValue(subFile)) {
+                            isSelectAll = false;
+                            break;
+                        }
                     }
                 }
                 changeSfofSelectAllState(isSelectAll);
@@ -167,16 +211,73 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
 
     /** 加载文件数据 */
     private void loadFiles(File currentFile) {
+        if (!mCurrentFiles.isEmpty()) {
+            int[] positionRecord = Utils.getPositionAndOffset((LinearLayoutManager) dialogSfofFilesRView.getLayoutManager());
+            mListPositions.put(mCurrentFiles.get(mCurrentFiles.size() - 1).getAbsolutePath(), positionRecord);
+        }
+
         mCurrentFiles.add(currentFile);
-        File[] files = currentFile.listFiles();
+        File[] files = currentFile.listFiles(mFileFilter);
         mSubFiles.clear();
         if (files != null && files.length > 0) {
             mSubFiles.addAll(Arrays.asList(files));
             Utils.sortFileList(mSubFiles);
         }
 
+        if (!mIsSingleChoice)
+            dialogSfofSelectAll.setVisibility(mSubFiles.isEmpty() ? View.GONE : View.VISIBLE);
+        onSubfileRVItemCBClick();
+
         mCurrentPathAdapter.onRefreshData(mCurrentFiles);
         mSubfileAdapter.onRefreshData(mSubFiles);
+        Utils.mHandler.post(() -> dialogSfofCurrentPathRView.scrollToPosition(mCurrentFiles.size() - 1));
+    }
+
+    /** 回退文件数据 */
+    private void rollbackFiles() {
+        if (mCurrentFiles.size() <= 1) {
+            dismiss();
+            return;
+        }
+
+        mCurrentFiles.remove(mCurrentFiles.size() - 1);
+        File currentFile = mCurrentFiles.get(mCurrentFiles.size() - 1);
+        File[] files = currentFile.listFiles(mFileFilter);
+        mSubFiles.clear();
+        if (files != null && files.length > 0) {
+            mSubFiles.addAll(Arrays.asList(files));
+            Utils.sortFileList(mSubFiles);
+        }
+
+        if (!mIsSingleChoice)
+            dialogSfofSelectAll.setVisibility(mSubFiles.isEmpty() ? View.GONE : View.VISIBLE);
+        onSubfileRVItemCBClick();
+
+        mCurrentPathAdapter.onRefreshData(mCurrentFiles);
+        mSubfileAdapter.onRefreshData(mSubFiles);
+        int[] positionRecord = mListPositions.get(currentFile.getAbsolutePath());
+        ((LinearLayoutManager) dialogSfofFilesRView.getLayoutManager()).scrollToPositionWithOffset(positionRecord[0], positionRecord[1]);
+    }
+
+    /** 跳转到指定文件数据 */
+    private void gotoFiles(File currentFile) {
+        int index = mCurrentFiles.indexOf(currentFile);
+        mCurrentFiles.subList(index + 1, mCurrentFiles.size()).clear();
+        File[] files = currentFile.listFiles(mFileFilter);
+        mSubFiles.clear();
+        if (files != null && files.length > 0) {
+            mSubFiles.addAll(Arrays.asList(files));
+            Utils.sortFileList(mSubFiles);
+        }
+
+        if (!mIsSingleChoice)
+            dialogSfofSelectAll.setVisibility(mSubFiles.isEmpty() ? View.GONE : View.VISIBLE);
+        onSubfileRVItemCBClick();
+
+        mCurrentPathAdapter.onRefreshData(mCurrentFiles);
+        mSubfileAdapter.onRefreshData(mSubFiles);
+        int[] positionRecord = mListPositions.get(currentFile.getAbsolutePath());
+        ((LinearLayoutManager) dialogSfofFilesRView.getLayoutManager()).scrollToPositionWithOffset(positionRecord[0], positionRecord[1]);
     }
 
     /** 改变全选按钮状态 */

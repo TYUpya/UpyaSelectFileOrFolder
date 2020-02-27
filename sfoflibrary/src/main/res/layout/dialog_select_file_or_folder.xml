@@ -28,11 +28,12 @@
                 android:src="@drawable/svg_close"/>
 
             <TextView
+                android:id="@+id/dialogSfofTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@string/dialogSfofTitle"
+                android:text="@string/dialogSfofTitle3"
                 android:textColor="#333333"
                 android:textSize="18sp"/>
 
