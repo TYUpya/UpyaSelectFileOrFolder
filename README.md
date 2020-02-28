@@ -11,7 +11,7 @@
 | <image src="./images/2.jpg"/> | <image src="./images/4.jpg"/> | <image src="./images/6.jpg"/> |
 
 # 依赖
-#### Gradle：
+### Gradle：
 
 * 步骤1：将以下代码添加到工程的build.gradle中：
 ```groovy
@@ -31,7 +31,7 @@ dependencies {
 }
 ```
 
-#### Maven:
+### Maven:
 
 * 步骤1：
 ```xml
