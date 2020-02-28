@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
-group = 'vip.upya'
+group = 'com.github.TYUpya'
 
 android {
     compileSdkVersion 29

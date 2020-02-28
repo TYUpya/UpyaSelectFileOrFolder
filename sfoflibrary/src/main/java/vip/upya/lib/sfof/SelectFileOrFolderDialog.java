@@ -231,8 +231,24 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
             Utils.sortFileList(mSubFiles);
         }
 
-        if (!mIsSingleChoice)
-            dialogSfofSelectAll.setVisibility(mSubFiles.isEmpty() ? View.GONE : View.VISIBLE);
+        if (!mIsSingleChoice) {
+            if (mSubFiles.isEmpty()) {
+                dialogSfofSelectAll.setVisibility(View.GONE);
+            } else {
+                if (mChoiceMode == CHOICEMODE_ONLY_FILE) {
+                    boolean hasFile = false;
+                    for (File subFile : mSubFiles) {
+                        if (subFile.isFile()) {
+                            hasFile = true;
+                            break;
+                        }
+                    }
+                    dialogSfofSelectAll.setVisibility(hasFile ? View.VISIBLE : View.GONE);
+                } else {
+                    dialogSfofSelectAll.setVisibility(View.VISIBLE);
+                }
+            }
+        }
         onSubfileRVItemCBClick();
 
         mCurrentPathAdapter.onRefreshData(mCurrentFiles);
@@ -257,8 +273,24 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
             Utils.sortFileList(mSubFiles);
         }
 
-        if (!mIsSingleChoice)
-            dialogSfofSelectAll.setVisibility(mSubFiles.isEmpty() ? View.GONE : View.VISIBLE);
+        if (!mIsSingleChoice) {
+            if (mSubFiles.isEmpty()) {
+                dialogSfofSelectAll.setVisibility(View.GONE);
+            } else {
+                if (mChoiceMode == CHOICEMODE_ONLY_FILE) {
+                    boolean hasFile = false;
+                    for (File subFile : mSubFiles) {
+                        if (subFile.isFile()) {
+                            hasFile = true;
+                            break;
+                        }
+                    }
+                    dialogSfofSelectAll.setVisibility(hasFile ? View.VISIBLE : View.GONE);
+                } else {
+                    dialogSfofSelectAll.setVisibility(View.VISIBLE);
+                }
+            }
+        }
         onSubfileRVItemCBClick();
 
         mCurrentPathAdapter.onRefreshData(mCurrentFiles);
@@ -281,8 +313,24 @@ public class SelectFileOrFolderDialog extends UpyaBaseDialog implements View.OnC
             Utils.sortFileList(mSubFiles);
         }
 
-        if (!mIsSingleChoice)
-            dialogSfofSelectAll.setVisibility(mSubFiles.isEmpty() ? View.GONE : View.VISIBLE);
+        if (!mIsSingleChoice) {
+            if (mSubFiles.isEmpty()) {
+                dialogSfofSelectAll.setVisibility(View.GONE);
+            } else {
+                if (mChoiceMode == CHOICEMODE_ONLY_FILE) {
+                    boolean hasFile = false;
+                    for (File subFile : mSubFiles) {
+                        if (subFile.isFile()) {
+                            hasFile = true;
+                            break;
+                        }
+                    }
+                    dialogSfofSelectAll.setVisibility(hasFile ? View.VISIBLE : View.GONE);
+                } else {
+                    dialogSfofSelectAll.setVisibility(View.VISIBLE);
+                }
+            }
+        }
         onSubfileRVItemCBClick();
 
         mCurrentPathAdapter.onRefreshData(mCurrentFiles);
