@@ -11,9 +11,9 @@
 | <image src="./images/2.jpg"/> | <image src="./images/4.jpg"/> | <image src="./images/6.jpg"/> |
 
 # 依赖
-* Gradle：
+#### Gradle：
 
-	步骤1：将以下代码添加到工程的build.gradle中：
+* 步骤1：将以下代码添加到工程的build.gradle中：
 ```groovy
 allprojects {
 	repositories {
@@ -23,7 +23,7 @@ allprojects {
 }
 ```
 
-	步骤2：添加依赖关系
+* 步骤2：添加依赖关系
 ```groovy
 dependencies {
 	...
@@ -31,9 +31,9 @@ dependencies {
 }
 ```
 
-* Maven:
+#### Maven:
 
-	步骤1：
+* 步骤1：
 ```xml
 <repositories>
 	<repository>
@@ -43,7 +43,7 @@ dependencies {
 </repositories>
 ```
 
-	步骤2：
+* 步骤2：
 ```xml
 <dependency>
 	<groupId>com.github.TYUpya</groupId>
