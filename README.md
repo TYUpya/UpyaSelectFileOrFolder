@@ -11,8 +11,8 @@
 | <image src="./images/2.jpg"/> | <image src="./images/4.jpg"/> | <image src="./images/6.jpg"/> |
 
 # 依赖
-### Gradle：
 
+### Gradle：
 * 步骤1：将以下代码添加到工程的build.gradle中：
 ```groovy
 allprojects {
@@ -31,8 +31,15 @@ dependencies {
 }
 ```
 
-### Maven:
+* PS:如果集成以上依赖后项目运行报错，请再添加以下依赖
+```groovy
+dependencies {
+	...
+	implementation 'androidx.recyclerview:recyclerview:1.1.0'
+}
+```
 
+### Maven:
 * 步骤1：
 ```xml
 <repositories>
@@ -52,10 +59,25 @@ dependencies {
 </dependency>
 ```
 
+* PS:如果集成以上依赖后项目运行报错，请再添加以下依赖
+```xml
+<dependency>
+	<groupId>androidx.recyclerview</groupId>
+	<artifactId>recyclerview</artifactId>
+	<version>1.1.0</version>
+	<scope>runtime</scope>
+</dependency>
+```
+
 # 最新版本
 | latest.integration |
 | :------------: |
 | [![](https://jitpack.io/v/TYUpya/UpyaSelectFileOrFolder.svg)](https://jitpack.io/#TYUpya/UpyaSelectFileOrFolder) |
+
+# 所需权限
+| 序号 | 权限 | 说明 |
+| :------------: | :------------: | :------------: |
+| 1 | <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> | 读取储存的文件权限 |
 
 # 使用介绍
 * 调用示例之 单选文件
