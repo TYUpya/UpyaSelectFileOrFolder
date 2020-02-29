@@ -77,7 +77,7 @@ dependencies {
 # 所需权限
 | 序号 | 权限 | 说明 |
 | :------------: | :------------: | :------------: |
-| 1 | <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> | 读取储存的文件权限 |
+| 1 | &#60;uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/&#62; | 读取储存的文件权限 |
 
 # 使用介绍
 * 调用示例之 单选文件
