@@ -27,7 +27,7 @@ allprojects {
 ```groovy
 dependencies {
 	...
-	implementation 'com.github.TYUpya:UpyaSelectFileOrFolder:1.0.0'
+	implementation 'com.github.TYUpya:UpyaSelectFileOrFolder:latest.integration'
 }
 ```
 
@@ -48,9 +48,14 @@ dependencies {
 <dependency>
 	<groupId>com.github.TYUpya</groupId>
 	<artifactId>UpyaSelectFileOrFolder</artifactId>
-	<version>1.0.0</version>
+	<version>latest.integration</version>
 </dependency>
 ```
+
+# 最新版本
+| latest.integration |
+| :------------: |
+| [![](https://jitpack.io/v/TYUpya/UpyaSelectFileOrFolder.svg)](https://jitpack.io/#TYUpya/UpyaSelectFileOrFolder) |
 
 # 使用介绍
 * 调用示例之 单选文件
@@ -150,7 +155,7 @@ public void onClick06(View view) {
 ```
 
 # 感谢
-😂nobody🤣
+😂[나 자신](https://github.com/TYUpya "TYUpya")🤣
 
 # License
 ```text
