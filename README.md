@@ -24,17 +24,23 @@ allprojects {
 ```
 
 * 步骤2：添加依赖关系
-```groovy
-dependencies {
-	...
-	implementation 'com.github.TYUpya:UpyaSelectFileOrFolder:latest.integration'
-}
-```
 
-* PS:如果集成以上依赖后项目运行报错，请再添加以下依赖
 ```groovy
+android{
+	...
+	// 需启用Java8
+	compileOptions {
+		targetCompatibility JavaVersion.VERSION_1_8
+		sourceCompatibility JavaVersion.VERSION_1_8
+	}
+}
+
 dependencies {
 	...
+	// 将下方的 ${latestVersion} 替换为当前最新的版本，最新版本参见下文
+	implementation 'com.github.TYUpya:UpyaSelectFileOrFolder:${latestVersion}'
+
+	// PS：如果集成以上依赖后项目运行报错，请再添加以下赖
 	implementation 'androidx.recyclerview:recyclerview:1.1.0'
 }
 ```
@@ -51,16 +57,16 @@ dependencies {
 ```
 
 * 步骤2：
+
 ```xml
+<!-- 将下方的 ${latestVersion} 替换为当前最新的版本，最新版本参见下文 -->
 <dependency>
 	<groupId>com.github.TYUpya</groupId>
 	<artifactId>UpyaSelectFileOrFolder</artifactId>
-	<version>latest.integration</version>
+	<version>${latestVersion}</version>
 </dependency>
-```
 
-* PS:如果集成以上依赖后项目运行报错，请再添加以下依赖
-```xml
+<!-- PS：如果集成以上依赖后项目运行报错，请再添加以下依赖 -->
 <dependency>
 	<groupId>androidx.recyclerview</groupId>
 	<artifactId>recyclerview</artifactId>
@@ -70,7 +76,7 @@ dependencies {
 ```
 
 # 最新版本
-| latest.integration |
+| latestVersion |
 | :------------: |
 | [![](https://jitpack.io/v/TYUpya/UpyaSelectFileOrFolder.svg)](https://jitpack.io/#TYUpya/UpyaSelectFileOrFolder) |
 
